@@ -47,7 +47,6 @@ public class AuthenticationInterface extends Application {
 	private static Logger logger = LogManager.getLogger(AuthenticationInterface.class);
 	
 	@POST
-	@Path("login")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response login(SecretCredentials credentials, @Context HttpServletRequest httpRequest) {
 		// Log request received
@@ -83,7 +82,6 @@ public class AuthenticationInterface extends Application {
 
 	
 	@GET
-	@Path("get")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUser(@Context HttpServletRequest httpRequest) {
 		
