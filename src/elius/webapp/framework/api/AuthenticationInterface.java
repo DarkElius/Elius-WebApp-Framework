@@ -74,7 +74,7 @@ public class AuthenticationInterface extends Application {
 		session.setAttribute(ApplicationAttributes.APP_USER_INFO, appUser);
 		
 		// Log request successfully
-		logger.trace("User successfully authenticated with role (" + appUser.getUserRole() + ")");
+		logger.trace("User(" + credentials.getUserId() + ") successfully authenticated with role (" + appUser.getUserRole() + ")");
 		
 		// Return authenticated
 		return Response.ok().build();
