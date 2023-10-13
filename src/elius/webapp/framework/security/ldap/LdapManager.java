@@ -168,7 +168,7 @@ public class LdapManager {
 	 */
 	public String authenticate(SecretCredentials credentials) {
 		// Log authentication
-		logger.trace("Authenticate userId (" + credentials.getUserId() + ") on baseDn(" + baseDn + ")");
+		logger.trace("Authenticate userId(" + credentials.getUserId() + ") on baseDn(" + baseDn + ")");
 		
 		// Response message
 		String response = "";
@@ -183,7 +183,7 @@ public class LdapManager {
 			// Authentication
 			connection.bind("uid=" + credentials.getUserId() + "," + baseDn, credentials.getPassword()); 
 			// Log logged in
-			logger.info("UserId (" + credentials.getUserId() + ") authenticated");
+			logger.info("UserId(" + credentials.getUserId() + ") authenticated");
 		} catch (LDAPException e) {
 			// Log error
 			logger.error("Error during ldap authentication of userId(" + credentials.getUserId() + ")");
@@ -236,7 +236,7 @@ public class LdapManager {
 		}
 
 		// Log value
-		logger.debug("User found in group");
+		logger.debug("UserId found in group");
 
 		// One or more records found
 		return true;	
