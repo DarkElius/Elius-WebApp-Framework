@@ -82,7 +82,7 @@ public class ApplicationAttributes {
 	public static final String PROP_LDAP_GROUP_SEARCH_USER = "ldap.group.search.user";
 	
 	// Properties - LDAP group search for power users (? is the userId), blank for authorize it
-	public static final String PROP_LDAP_GROUP_SEARCH_POWERUSER = "ldap.group.search.powerUser ";
+	public static final String PROP_LDAP_GROUP_SEARCH_POWERUSER = "ldap.group.search.powerUser";
 	
 	// Properties - LDAP complete name attribute
 	public static final String PROP_LDAP_USER_CN = "ldap.user.cn";
