@@ -61,7 +61,7 @@ public class AuthenticationInterface extends Application {
 		// Check for errors
 		if(null == appUser) {
 			// Log unauthorized used
-			logger.warn("User not authorized");
+			logger.error("UserId(" + credentials.getUserId() + ") not authorized");
 			
 			// Return error
 			return Response.status(Response.Status.UNAUTHORIZED).entity(appUserProfile.getResponse()).build();
@@ -74,7 +74,7 @@ public class AuthenticationInterface extends Application {
 		session.setAttribute(ApplicationAttributes.APP_USER_INFO, appUser);
 		
 		// Log request successfully
-		logger.trace("User(" + credentials.getUserId() + ") successfully authenticated with role (" + appUser.getUserRole() + ")");
+		logger.trace("UserId(" + credentials.getUserId() + ") successfully authenticated with role (" + appUser.getUserRole() + ")");
 		
 		// Return authenticated
 		return Response.ok().build();

@@ -24,7 +24,7 @@ public enum ApplicationUserRole {
 	UNAUTHORIZED(0, "Unauthorized"),
 	GUEST(1, "Guest"), 
 	USER(2, "User"), 
-	POWER_USER(3, "PowerUser"),
+	POWERUSER(3, "PowerUser"),
 	ADMINISTRATOR(4, "Administrator");
 
 	// User role name

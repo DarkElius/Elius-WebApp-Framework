@@ -35,6 +35,7 @@ import com.unboundid.ldap.sdk.SearchResultEntry;
 import com.unboundid.ldap.sdk.SearchScope;
 
 import elius.webapp.framework.application.ApplicationAttributes;
+import elius.webapp.framework.application.ApplicationUserRole;
 import elius.webapp.framework.properties.PropertiesManager;
 import elius.webapp.framework.security.SecurityTrustAllCertificates;
 import elius.webapp.framework.security.secret.SecretCredentials;
@@ -47,18 +48,33 @@ public class LdapManager {
 	// Properties file
 	private PropertiesManager appProperties;
 	
-	// LDAP server address
+	// Server address
 	private String server;
-	// LDAP port
+	// Port
 	private int port;
-	// LDAP Base distinguished name
-	private String baseDn;
-	// LDAP use secure connection (LDAPs)
+	// Use secure connection (LDAPs)
 	private boolean useSecure;
-	// LDAP trust all server certificates
+	// Trust all server certificates
 	private boolean trustAllCertificates;
-	// LDAP connection
+	// Connection
 	private LDAPConnection connection;
+	// Base distinguished name
+	private String baseDn;
+	// Group base distinguished name
+	private String groupBaseDn;
+	// Search guest group
+	private String groupSearchGuests;
+	// Search user group
+	private String groupSearchUsers;
+	// Search power user group
+	private String groupSearchPowerUsers;
+	// Search administrators group
+	private String groupSearchAdministrators;
+	// Attribute for userId
+	private String attUserId;
+	// Attribute for complete name
+	private String attCompleteName;
+
 
 	
 	/**
@@ -70,26 +86,41 @@ public class LdapManager {
 		// Load default properties
 		appProperties.load();
 		
-		// LDAP Server
+		// Server
 		server = appProperties.get(ApplicationAttributes.PROP_LDAP_SERVER);
 		
-		// LDAP Port
+		// Port
 		port = appProperties.getInt(ApplicationAttributes.PROP_LDAP_PORT, ApplicationAttributes.DEFAULT_LDAP_PORT);
 
-		// LDAP enable LDAPs (secure) set default to yes
+		// Enable LDAPs (secure), set default to yes
 		useSecure = true;
-		// LDAP enable LDAPs (secure) (y/n)
+		// Enable LDAPs (secure) (y/n)
 		if(!"Y".equalsIgnoreCase(appProperties.get(ApplicationAttributes.PROP_LDAP_SECURE)))
 			useSecure = false;
 
-		// LDAP
+		// Trust all server certificates, set default to false
 		trustAllCertificates = false;
-		// LDAP trust all certificates (y/n)
+		// Trust all certificates (y/n)
 		if("Y".equalsIgnoreCase(appProperties.get(ApplicationAttributes.PROP_LDAP_TRUST_ALL_CERTIFICATES)))
 			trustAllCertificates = true;
 		
-		// LDAP BaseDN
+		// Base distinguished name
 		baseDn = appProperties.get(ApplicationAttributes.PROP_LDAP_BASEDN);
+		// Group base distinguished name
+		groupBaseDn = appProperties.get(ApplicationAttributes.PROP_LDAP_GROUP_BASEDN);
+		// Guest group search
+		groupSearchGuests = appProperties.get(ApplicationAttributes.PROP_LDAP_GROUP_SEARCH_GUESTS);
+		// User group search
+		groupSearchUsers = appProperties.get(ApplicationAttributes.PROP_LDAP_GROUP_SEARCH_USERS);
+		// Power user group search
+		groupSearchPowerUsers = appProperties.get(ApplicationAttributes.PROP_LDAP_GROUP_SEARCH_POWERUSERS);
+		// Administrator group search
+		groupSearchAdministrators = appProperties.get(ApplicationAttributes.PROP_LDAP_GROUP_SEARCH_ADMINISTRATORS);
+		// Attribute for userId, default is uid
+		attUserId = appProperties.get(ApplicationAttributes.PROP_LDAP_USER_ID, "uid");
+		// Attribute for complete name, default is cn
+		attCompleteName = appProperties.get(ApplicationAttributes.PROP_LDAP_USER_CN, "cn");
+		
 	}
 	
 
@@ -181,7 +212,7 @@ public class LdapManager {
 		
 		try {
 			// Authentication
-			connection.bind("uid=" + credentials.getUserId() + "," + baseDn, credentials.getPassword()); 
+			connection.bind(attUserId + "=" + credentials.getUserId() + "," + baseDn, credentials.getPassword()); 
 			// Log logged in
 			logger.info("UserId(" + credentials.getUserId() + ") authenticated");
 		} catch (LDAPException e) {
@@ -202,44 +233,75 @@ public class LdapManager {
 	 * Execute a search to verify if user is present in a specific group
 	 * @param groupBaseDn Group base distinguished name
 	 * @param groupSearch Group search string
+	 * @param userId UserId
 	 * @return True if search return at least one element
 	 */
-	public boolean checkGroup(String groupBaseDn, String groupSearch) {
+	public boolean searchGroup(String groupBaseDn, String groupSearch, String userId) {
 		// Log request
-		logger.debug("Check GroupBaseDn(" + groupBaseDn + ") GroupSearch(" + groupSearch + ")");
+		logger.trace("Check GroupBaseDn(" + groupBaseDn + ") GroupSearch(" + groupSearch + ")");
 		
-		try {
-			// Prepare search request
-			SearchRequest request = new SearchRequest(groupBaseDn, SearchScope.SUB, groupSearch);
+		// Set default to false
+		boolean found = false;
+		
+		// User group specified or blank
+		if(!"n/a".equalsIgnoreCase(groupSearch)) {
 			
-			// No limit
-            request.setSizeLimit(0);
-            
-            // Execute search
-            SearchResult searchResult = connection.search(request);
+			// No search string specified
+			if(groupSearch.isEmpty()) {
+				
+				// User has the role
+				found = true;
+				// Log information about the role
+				logger.trace("Search filter is empty and userId(" + userId + ") has the role");
+				
+			} else {
+				
+				try {
+					// Prepare search request
+					SearchRequest request = new SearchRequest(groupBaseDn, SearchScope.SUB, groupSearch);
+					
+					// No limit
+		            request.setSizeLimit(0);
+		            
+		            // Execute search
+		            SearchResult searchResult = connection.search(request);
+	
+		            // Get results
+		            List<SearchResultEntry> result = searchResult.getSearchEntries();
+	
+		            // Empty list
+		            if (!result.isEmpty()) {
+		            	// User has  the role
+		            	found = true;
+						// Log value
+						logger.trace("UserId(" + userId + ") found in group");
+		            } else {
+						// Log value
+						logger.trace("UserId(" + userId + ") not found in group");		            	
+		            }
+		            
+				} catch (LDAPException e) {
+					// Log error
+					logger.error("Error searching in group for userId(" + userId + ")");
+					// Log error message
+					logger.error(e.getMessage());
+	            	// User has not the role
+	            	found = false;
+				}
 
-            // Get results
-            List<SearchResultEntry> result = searchResult.getSearchEntries();
-
-            // Empty list
-            if (result.isEmpty()) {
-            	// No records found
-            	return false;
-            }
-		} catch (LDAPException e) {
-			// Log error
-			logger.error("Error searching group");
-			// Log error message
-			logger.error(e.getMessage());
-			//Return error
-			return false;
+			}
+			
+		} else {
+			
+			// User has not the role
+			found = false;
+			// Log information about the role
+			logger.trace("Search filter is set to n/a and userId(" + userId + ") has not the role");
+			
 		}
 
-		// Log value
-		logger.debug("UserId found in group");
-
-		// One or more records found
-		return true;	
+		// Return search result
+		return found;	
 	}
 	
 	
@@ -261,7 +323,7 @@ public class LdapManager {
 		
 		try {
 			// Get attribute for selected user
-			sre = connection.getEntry("uid=" + userId + "," + baseDn, attribute);
+			sre = connection.getEntry(attUserId + "=" + userId + "," + baseDn, attribute);
 		} catch (LDAPException e) {
 			// Log error
 			logger.error("Error searching attribute for userId(" + userId + ")");
@@ -278,11 +340,63 @@ public class LdapManager {
 		}
 		
 		// Log value
-		logger.debug("Value(" + value + ") of attribute(" + attribute + ") for userId(" + userId + ")");
+		logger.trace("Value(" + value + ") of attribute(" + attribute + ") for userId(" + userId + ")");
 
 		// Return value for selected attribute-userId
 		return value;
 	}
 	
+	
+	/**
+	 * Get the user role by searching in groups
+	 * @param userId
+	 * @return Application user role from unauthorized to administrator
+	 */
+	public ApplicationUserRole getRole(String userId) {
+		// Log
+		logger.debug("Get role for userId(" + userId + ")");
+		
+		// Initialize role to unauthorized
+		ApplicationUserRole appUserRole = ApplicationUserRole.UNAUTHORIZED;
+		
+		// Log
+		logger.trace("Looking for GUEST authorization...");
+		// Check for guest authorization
+		if(searchGroup(groupBaseDn, groupSearchGuests, userId))
+			appUserRole = ApplicationUserRole.GUEST;
+		
+		// Log
+		logger.trace("Looking for  USER authorization...");
+		// Check for user authorization
+		if(searchGroup(groupBaseDn, groupSearchUsers, userId))
+			appUserRole = ApplicationUserRole.USER;
 
+		// Log
+		logger.trace("Looking for  POWERUSER authorization...");
+		// Check for power user authorization
+		if(searchGroup(groupBaseDn, groupSearchPowerUsers, userId))
+			appUserRole = ApplicationUserRole.POWERUSER;
+			
+		// Log
+		logger.trace("Looking for  ADMINISTRATOR authorization...");
+		// Check for administrator authorization
+		if(searchGroup(groupBaseDn, groupSearchAdministrators, userId))
+			appUserRole = ApplicationUserRole.ADMINISTRATOR;
+		
+		// Log
+		logger.trace("UserId has the " + appUserRole.toString() + " role");
+		
+		// Return role for the specified user
+		return appUserRole;
+	}
+
+	
+	/**
+	 * Return the complete attribute name
+	 * @return Complete attribute name
+	 */
+	public String getAttCompleteName() {
+		return attCompleteName;
+	}
+	
 }

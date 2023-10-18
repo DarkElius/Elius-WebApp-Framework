@@ -45,16 +45,6 @@ public class AuthenticationManager {
 	
 	// Property file
 	private PropertiesManager appProperties;
-	// Group base distinguished name
-	private String groupBaseDn;
-	// Search user group
-	private String groupSearchUser;
-	// Search power user group
-	private String groupSearchPowerUser;
-	// Attribute for complete name
-	private String completeName;
-
-
 	
 	
 	/**
@@ -77,16 +67,7 @@ public class AuthenticationManager {
 			enableAuthentication = ApplicationAttributes.DEFAULT_SECURITY_AUTHENTICATION_ENABLE;
 			// Log the error
 			logger.warn("Invalid value of properties (" + ApplicationAttributes.PROP_SECURITY_AUTHENTICATION_ENABLE + "), default was set (" + ApplicationAttributes.DEFAULT_SECURITY_AUTHENTICATION_ENABLE + ")");
-		}
-		
-		// Group base distinguished name
-		groupBaseDn = appProperties.get(ApplicationAttributes.PROP_LDAP_BASEDN);
-		// User group search
-		groupSearchUser = appProperties.get(ApplicationAttributes.PROP_LDAP_GROUP_SEARCH_USER);
-		// Power user group search
-		groupSearchPowerUser = appProperties.get(ApplicationAttributes.PROP_LDAP_GROUP_SEARCH_POWERUSER);
-		// Attribute for complete name
-		completeName = appProperties.get(ApplicationAttributes.PROP_LDAP_USER_CN);
+		}		
 	}
 	
 	
@@ -139,35 +120,30 @@ public class AuthenticationManager {
 		response = ldapManager.authenticate(credentials);
 		
 		// Check errors
-		if(!response.isEmpty())
+		if(!response.isEmpty()) {
+			// Close LDAP connection
+			ldapManager.close();
+			// Return error
 			return null;		
+		}
 	
-		// Check user search string
-		if(!groupSearchUser.isEmpty()) {
-			// Check user group
-			if(ldapManager.checkGroup(groupBaseDn, groupSearchUser.replace("?", credentials.getUserId()))) {
-				// Set authorization to user
-				appUser.setUserRole(ApplicationUserRole.USER);
-			}
-		} else {
-			// No specific filter: set authorization to user
-			appUser.setUserRole(ApplicationUserRole.USER);		
-		}
+		// Get and set user role
+		appUser.setUserRole(ldapManager.getRole(credentials.getUserId()));
 		
-		// Check power user search string
-		if(!groupSearchPowerUser.isEmpty()) {
-			// Check power user group
-			if(ldapManager.checkGroup(groupBaseDn, groupSearchPowerUser.replace("?", credentials.getUserId()))) {
-				// Set authorization to power user
-				appUser.setUserRole(ApplicationUserRole.POWER_USER);
-			}
-		} else {
-			// No specific filter: set authorization to power user
-			appUser.setUserRole(ApplicationUserRole.POWER_USER);		
+		// Check if user has a role to proceed with the application usage
+		if(ApplicationUserRole.UNAUTHORIZED == appUser.getUserRole()) {
+			// Set error
+			logger.warn("UserId (" + appUser.getUserId() + ") not authorized");
+			// Close LDAP connection
+			ldapManager.close();
+			// Return error
+			return null;
 		}
+		// Set error
+		logger.debug("UserId (" + appUser.getUserId() + ") has role " + appUser.toString());
 		
 		// Get complete name
-		String userCN = ldapManager.getAttribute(credentials.getUserId(), completeName);
+		String userCN = ldapManager.getAttribute(credentials.getUserId(), ldapManager.getAttCompleteName());
 		// Check result
 		if(null != userCN) {
 			// Set complete name

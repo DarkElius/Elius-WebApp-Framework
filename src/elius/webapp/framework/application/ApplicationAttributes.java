@@ -72,18 +72,27 @@ public class ApplicationAttributes {
 	// Properties - LDAP trust all certificates (y/n), default is n
 	public static final String PROP_LDAP_TRUST_ALL_CERTIFICATES = "ldap.trustAllCertificates";
 
-	// Properties - LDAP base dn
+	// Properties - LDAP base distinguished name
 	public static final String PROP_LDAP_BASEDN = "ldap.baseDn";
 	
-	// Properties - LDAP group - base dn
+	// Properties - LDAP group - base distinguished name
 	public static final String PROP_LDAP_GROUP_BASEDN = "ldap.group.baseDn";
 	
+	// Properties - LDAP group search for guests (? is the userId), blank for authorize it
+	public static final String PROP_LDAP_GROUP_SEARCH_GUESTS = "ldap.group.search.guests";
+	
 	// Properties - LDAP group search for users (? is the userId), blank for authorize it
-	public static final String PROP_LDAP_GROUP_SEARCH_USER = "ldap.group.search.user";
+	public static final String PROP_LDAP_GROUP_SEARCH_USERS = "ldap.group.search.users";
 	
 	// Properties - LDAP group search for power users (? is the userId), blank for authorize it
-	public static final String PROP_LDAP_GROUP_SEARCH_POWERUSER = "ldap.group.search.powerUser";
+	public static final String PROP_LDAP_GROUP_SEARCH_POWERUSERS = "ldap.group.search.powerUsers";
 	
+	// Properties - LDAP group search for Administrators (? is the userId), blank for authorize it
+	public static final String PROP_LDAP_GROUP_SEARCH_ADMINISTRATORS = "ldap.group.search.administrators";
+	
+	// Properties - LDAP userId attribute
+	public static final String PROP_LDAP_USER_ID = "ldap.user.id";
+
 	// Properties - LDAP complete name attribute
 	public static final String PROP_LDAP_USER_CN = "ldap.user.cn";
 	
