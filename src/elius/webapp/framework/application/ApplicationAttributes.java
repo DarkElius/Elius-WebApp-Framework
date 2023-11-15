@@ -44,6 +44,12 @@ public class ApplicationAttributes {
 	// Default - Security repository type
 	public static final String DEFAULT_SECURITY_REPOSITORY_TYPE = "KeyStore";
 
+	// Default - Redirect mask, regular expression
+	public static final String DEFAULT_SECURITY_REDIRECT_MASK = ".";
+	
+	// Default - Redirect page
+	public static final String DEFAULT_SECURITY_REDIRECT_PAGE = "/login.html";	
+
 	// Default - LDAP port
 	public static final int DEFAULT_LDAP_PORT = 636;
 		
@@ -59,6 +65,12 @@ public class ApplicationAttributes {
 	
 	// Properties - External uri
 	public static final String PROP_SECURITY_EXTERNAL_URI = "security.external.uri";
+	
+	// Properties - Redirect mask, regular expression
+	public static final String PROP_SECURITY_REDIRECT_MASK = "security.redirect.mask";
+	
+	// Properties - Redirect page
+	public static final String PROP_SECURITY_REDIRECT_PAGE = "security.redirect.page";	
 	
 	// Properties - LDAP server
 	public static final String PROP_LDAP_SERVER = "ldap.server";

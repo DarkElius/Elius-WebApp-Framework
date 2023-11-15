@@ -28,6 +28,7 @@ import elius.webapp.framework.application.ApplicationUserRole;
 import elius.webapp.framework.properties.PropertiesManager;
 import elius.webapp.framework.security.ldap.LdapManager;
 import elius.webapp.framework.security.secret.SecretCredentials;
+import jakarta.servlet.http.HttpSession;
 
 public class AuthenticationManager {
 
@@ -76,7 +77,7 @@ public class AuthenticationManager {
 	 * @param credentials Credentials
 	 * @return Application user or null in case of errors
 	 */
-	public ApplicationUser login(SecretCredentials credentials) {
+	public ApplicationUser login(SecretCredentials credentials, HttpSession httpSession) {
 		// Response message
 		response = "";
 		
@@ -153,6 +154,9 @@ public class AuthenticationManager {
 		// Close LDAP connection
 		ldapManager.close();
 		
+		// Save userId in session
+		httpSession.setAttribute(ApplicationAttributes.APP_USER_INFO, appUser);
+		
 		// Return successful
 		return appUser;
 	}
@@ -164,6 +168,21 @@ public class AuthenticationManager {
 	 */
 	public String getResponse() {
 		return response;
-	}	
+	}
+	
+	/**
+	 * Return true if the userId is logged
+	 * @param httpSession
+	 * @return true if userId is logged
+	 */
+	public static boolean isUserIdLogged(HttpSession httpSession) {
+		
+		// UserId not logged
+		if(null == httpSession.getAttribute(ApplicationAttributes.APP_USER_INFO))
+			return false;
+		
+		// UserId is logged
+		return true;
+	}
 	
 }

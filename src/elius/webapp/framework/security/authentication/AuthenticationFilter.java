@@ -28,7 +28,6 @@ import java.util.StringTokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import elius.webapp.framework.application.ApplicationAttributes;
 import elius.webapp.framework.application.ApplicationUser;
 import elius.webapp.framework.security.secret.SecretCredentials;
 
@@ -49,24 +48,23 @@ public class AuthenticationFilter implements jakarta.servlet.Filter {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 		
-		// Debug authorization filter
-		logger.trace("Do filter");
+		// Get requested resource
+		String path = ((HttpServletRequest) servletRequest).getServletPath();
+		
+		// Log
+		logger.trace("Requested resource (" + path + ")");
 		
 		// Process HTTP request
 		if (servletRequest instanceof HttpServletRequest) {
 			// Cast
 			HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
 			HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-
-			
+	
 			// Get Session
-			HttpSession session = httpServletRequest.getSession();
-			
-			// Save userId in session
-			ApplicationUser appUser = (ApplicationUser)session.getAttribute(ApplicationAttributes.APP_USER_INFO);
+			HttpSession httpSession = httpServletRequest.getSession();
 			
 			// Valid user found in session, skip authorization
-			if(null != appUser) {
+			if(AuthenticationManager.isUserIdLogged(httpSession)) {
 				// Finish
 				filterChain.doFilter(httpServletRequest, httpServletResponse);				
 			} else {
@@ -114,7 +112,7 @@ public class AuthenticationFilter implements jakarta.servlet.Filter {
 									AuthenticationManager appUserProfile = new AuthenticationManager();
 									
 									// Execute login
-									appUser = appUserProfile.login(credentials);
+									ApplicationUser appUser = appUserProfile.login(credentials, httpSession);
 									
 									// Check for errors
 									if(null == appUser) {
@@ -124,9 +122,6 @@ public class AuthenticationFilter implements jakarta.servlet.Filter {
 										// Set response, invalid authentication header
 										unauthorized(httpServletResponse, "User not authorized");
 									} else {
-										// Save userId in session
-										session.setAttribute(ApplicationAttributes.APP_USER_INFO, appUser);
-																				
 										// Finish
 										filterChain.doFilter(httpServletRequest, httpServletResponse);
 									}

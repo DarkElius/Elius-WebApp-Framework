@@ -56,7 +56,7 @@ public class AuthenticationInterface extends Application {
 		AuthenticationManager appUserProfile = new AuthenticationManager();
 		
 		// Execute login
-		ApplicationUser appUser = appUserProfile.login(credentials);
+		ApplicationUser appUser = appUserProfile.login(credentials, httpRequest.getSession());
 		
 		// Check for errors
 		if(null == appUser) {
@@ -129,11 +129,11 @@ public class AuthenticationInterface extends Application {
 			// Log request error
 			logger.warn("User not found");		
 		} else {
-			// Invalidate session
-			session.invalidate();
 			// Log request successfully
 			logger.trace(appUser.getUserId() + " logged out");
 		}
+		// Invalidate session
+		session.invalidate();
 		
 		// Return successful
 		return Response.ok().build();
