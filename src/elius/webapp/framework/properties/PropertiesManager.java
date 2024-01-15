@@ -163,4 +163,33 @@ public class PropertiesManager {
 		// Return value
 		return value;
 	}
+	
+	
+	/**
+	 * Fetch the value of the property and default value is set if it's null, empty or not a long
+	 * @param key Key
+	 * @param defaultValue Default value
+	 * @return Key value or default if the original value is null, empty or not a long
+	 */
+	public long getLong(String key, long defaultValue) {
+		// Initialize value
+		long value = 0;
+	
+		try {
+			
+			// Fetch the key value
+			value = Long.parseLong(get(key));
+			
+		} catch (Exception e) {
+			
+			// Set default value
+			value = defaultValue;
+			
+			// Log warning
+			logger.warn("Invalid or empty properties (" + key + "), default was set (" + defaultValue + ")");		
+		}
+		
+		// Return value
+		return value;
+	}
 }
