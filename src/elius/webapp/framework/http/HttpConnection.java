@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
 import elius.webapp.framework.security.SecurityTrustAllCertificates;
-
+import elius.webapp.framework.security.secret.SecretCredentials;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -42,6 +42,7 @@ public class HttpConnection {
 
 	// Request response content
 	private String httpResponseContent;
+	
 	
 	/**
 	 * Trust all certificates
@@ -62,6 +63,7 @@ public class HttpConnection {
 		return sslContext;
 	}
 	
+	
 	/**
 	 * Execute a GET call to the specified URL
 	 * @param uru URI to be called
@@ -69,7 +71,7 @@ public class HttpConnection {
 	 * @param trustAllCertificates True to trust all certificates
 	 * @return 0 Successful, 1 Error 
 	 */
-	public int get(String uri, HttpCredentials credentials, boolean trustAllCertificates) {
+	public int get(String uri, SecretCredentials credentials, boolean trustAllCertificates) {
 		// Log get
 		logger.debug("GET URI(" + uri + ") User(" + credentials.getUserId() + ") + TrustAll(" + trustAllCertificates + ")");		
 		
@@ -128,7 +130,7 @@ public class HttpConnection {
 	 * @param accept Set accept type
 	 * @return 0 Successful, 1 Error 
 	 */
-	public int post(String uri, HttpCredentials credentials, boolean trustAllCertificates, Entity<?> body, MediaType content, MediaType accept) {
+	public int post(String uri, SecretCredentials credentials, boolean trustAllCertificates, Entity<?> body, MediaType content, MediaType accept) {
 		// Log get
 		logger.debug("POST URI(" + uri + ") User(" + credentials.getUserId() + ") + TrustAll(" + trustAllCertificates + ")");		
 		
