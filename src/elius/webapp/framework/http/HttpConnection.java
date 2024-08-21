@@ -69,7 +69,7 @@ public class HttpConnection {
 	 * @param uru URI to be called
 	 * @param credentials Credentials or null for unauthenticated connection
 	 * @param trustAllCertificates True to trust all certificates
-	 * @return 0 Successful, 1 Error 
+	 * @return 0 Successful, 1 HTTP Error, 2 Generic Error
 	 */
 	public int get(String uri, SecretCredentials credentials, boolean trustAllCertificates) {
 		// Log get
@@ -104,12 +104,26 @@ public class HttpConnection {
 			// Set response content
 			httpResponseContent = response.readEntity(String.class);
 			
+			// Get status code
+			int httpRc = response.getStatus();
+
+			// Check HTTP status code
+			if((httpRc < 200) || (208 < httpRc)) {
+				// Log error
+				logger.error("HTTP error");
+				// Log message
+				logger.error(httpResponseContent);
+				// Return HTTP error
+				return 1;
+			}
+			
 		} catch (Exception e) {
 			// Log error
-			logger.error("GET error");
+			logger.error("Generic error");
 			// Log message
 			logger.error(e.getMessage());
-			return 1;
+			// Return generic error
+			return 2;
 		}
 		
 		// Log get
@@ -128,7 +142,7 @@ public class HttpConnection {
 	 * @param body Body
 	 * @param content Set content type
 	 * @param accept Set accept type
-	 * @return 0 Successful, 1 Error 
+	 * @return 0 Successful, 1 HTTP Error, 2 Generic Error 
 	 */
 	public int post(String uri, SecretCredentials credentials, boolean trustAllCertificates, Entity<?> body, MediaType content, MediaType accept) {
 		// Log get
@@ -161,15 +175,29 @@ public class HttpConnection {
 	          .accept(accept)
 	          .post(body);
 	     
-			// Set response content
+			// Get status code
+			int httpRc = response.getStatus();
+
+			// Check HTTP status code
 			httpResponseContent = response.readEntity(String.class);
+			
+			// Check HTTP return code
+			if((httpRc < 200) || (208 < httpRc)) {
+				// Log error
+				logger.error("HTTP error");
+				// Log message
+				logger.error(httpResponseContent);
+				// Return HTTP error
+				return 1;
+			}
 			
 		} catch (Exception e) {
 			// Log error
-			logger.error("POST error");
+			logger.error("Generic error");
 			// Log message
 			logger.error(e.getMessage());
-			return 1;
+			// Return generic error
+			return 2;
 		}
 		
 		// Log get
