@@ -1,9 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>EliusWebAppFramework</groupId>
 	<artifactId>EliusWebAppFramework</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<description>Elius WebApp Framework</description>
 
 	<licenses>
@@ -27,8 +29,7 @@
 		<developerConnection>
 			scm:git:ssh://github.com/DarkElius/Elius-WebApp-Framework.git</developerConnection>
 		<url>https://github.com/DarkElius/Elius-WebApp-Framework/tree/master</url>
-	  <tag>EliusWebAppFramework-0.0.1</tag>
-  </scm>
+	</scm>
 
 
 	<build>
