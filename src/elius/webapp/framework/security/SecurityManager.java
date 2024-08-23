@@ -45,7 +45,7 @@ public class SecurityManager {
 	
 	/**
 	 * Initialize Security Manager
-	 * @password KeyStore main password
+	 * @param password KeyStore main password
 	 * @return 0 Successful or 1 Error
 	 */
 	public int initialize(String password) {

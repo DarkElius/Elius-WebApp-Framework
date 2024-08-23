@@ -66,7 +66,7 @@ public class HttpConnection {
 	
 	/**
 	 * Execute a GET call to the specified URL
-	 * @param uru URI to be called
+	 * @param uri URI to be called
 	 * @param credentials Credentials or null for unauthenticated connection
 	 * @param trustAllCertificates True to trust all certificates
 	 * @return 0 Successful, 1 HTTP Error, 2 Generic Error
@@ -136,7 +136,7 @@ public class HttpConnection {
 	
 	/**
 	 * Execute a POST call to the specified URL
-	 * @param uru URI to be called
+	 * @param uri URI to be called
 	 * @param credentials Credentials or null for unauthenticated connection
 	 * @param trustAllCertificates True to trust all certificates
 	 * @param body Body
