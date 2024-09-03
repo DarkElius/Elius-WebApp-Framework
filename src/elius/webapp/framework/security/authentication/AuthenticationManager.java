@@ -141,7 +141,7 @@ public class AuthenticationManager {
 			return null;
 		}
 		// Set error
-		logger.debug("UserId (" + appUser.getUserId() + ") has role " + appUser.toString());
+		logger.debug("UserId (" + appUser.getUserId() + ") has role " + appUser.getUserRole().getName());
 		
 		// Get complete name
 		String userCN = ldapManager.getAttribute(credentials.getUserId(), ldapManager.getAttCompleteName());
