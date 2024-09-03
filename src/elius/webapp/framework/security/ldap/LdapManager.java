@@ -237,6 +237,10 @@ public class LdapManager {
 	 * @return True if search return at least one element
 	 */
 	public boolean searchGroup(String groupBaseDn, String groupSearch, String userId) {
+		
+		// Set user in search string
+		groupSearch = groupSearch.replaceAll("\\?", userId);
+		
 		// Log request
 		logger.trace("Check GroupBaseDn(" + groupBaseDn + ") GroupSearch(" + groupSearch + ")");
 		
