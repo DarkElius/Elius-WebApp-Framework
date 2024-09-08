@@ -26,7 +26,6 @@ import elius.webapp.framework.application.ApplicationAttributes;
 import elius.webapp.framework.application.ApplicationUser;
 import elius.webapp.framework.application.ApplicationUserRole;
 import elius.webapp.framework.properties.PropertiesManager;
-import elius.webapp.framework.security.ldap.LdapManager;
 import elius.webapp.framework.security.secret.SecretCredentials;
 import jakarta.servlet.http.HttpSession;
 
@@ -39,7 +38,7 @@ public class AuthenticationManager {
 	private String enableAuthentication;
 	
 	// LDAP Manager
-	private LdapManager ldapManager;
+	private AuthenticationLdap ldapManager;
 	
 	// Response message
 	private String response;
@@ -53,7 +52,7 @@ public class AuthenticationManager {
 	 */
 	public AuthenticationManager() {
 		// Initialize LDAP Manager
-		ldapManager = new LdapManager();
+		ldapManager = new AuthenticationLdap();
 		// Application properties
 		appProperties = new PropertiesManager();
 		// Load default properties

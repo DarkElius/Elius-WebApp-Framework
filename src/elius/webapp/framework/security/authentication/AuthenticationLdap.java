@@ -17,7 +17,7 @@
     under the License.
 */
 
-package elius.webapp.framework.security.ldap;
+package elius.webapp.framework.security.authentication;
 
 import java.util.List;
 
@@ -40,10 +40,10 @@ import elius.webapp.framework.properties.PropertiesManager;
 import elius.webapp.framework.security.SecurityTrustAllCertificates;
 import elius.webapp.framework.security.secret.SecretCredentials;
 
-public class LdapManager {
+public class AuthenticationLdap {
 	
 	// Get logger
-	private static Logger logger = LogManager.getLogger(LdapManager.class);
+	private static Logger logger = LogManager.getLogger(AuthenticationLdap.class);
 
 	// Properties file
 	private PropertiesManager appProperties;
@@ -80,7 +80,7 @@ public class LdapManager {
 	/**
 	 * Constructor
 	 */
-	public LdapManager() {
+	public AuthenticationLdap() {
 		// Application properties
 		appProperties = new PropertiesManager();
 		// Load default properties
