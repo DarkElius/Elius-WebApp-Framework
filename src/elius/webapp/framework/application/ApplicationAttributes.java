@@ -19,6 +19,12 @@
 
 package elius.webapp.framework.application;
 
+/**
+ * Definition of all static strings related to application, default values and properties/resources.
+ * 
+ * @author Elia Milioni
+ *
+ */
 public class ApplicationAttributes {
 	
 	// Attribute to identify user info
@@ -59,13 +65,7 @@ public class ApplicationAttributes {
 	
 	// Properties - User role for unauthenticated user
 	public static final String PROP_SECURITY_UNAUTHENTICATED_ROLE = "security.unauthenticated.role";	
-	
-	// Properties - Security repository type
-	public static final String PROP_SECURITY_REPOSITORY_TYPE = "security.repository.type";
-	
-	// Properties - External uri
-	public static final String PROP_SECURITY_EXTERNAL_URI = "security.external.uri";
-	
+		
 	// Properties - Redirect mask, regular expression
 	public static final String PROP_SECURITY_REDIRECT_MASK = "security.redirect.mask";
 	

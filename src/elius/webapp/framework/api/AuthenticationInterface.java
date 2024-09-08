@@ -40,6 +40,12 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * API to manage user authentication
+ * 
+ * @author Elia Milioni
+ *
+ */
 @Path("/auth")
 public class AuthenticationInterface extends Application {
 
