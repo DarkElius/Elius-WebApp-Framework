@@ -23,12 +23,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import elius.webapp.framework.application.ApplicationAttributes;
-
 
 
 public class PropertiesManager {
@@ -104,6 +105,9 @@ public class PropertiesManager {
     		// Get property value
         	value = properties.getProperty(key);
     
+        	// Resolve environment variables
+        	value = resolveEnvironmentVariables(value);
+        	
 			// Log key request
 			logger.trace("Key(" + key + ") value(" + value + ")");        	
         } 
@@ -111,6 +115,7 @@ public class PropertiesManager {
     	// Return value
     	return value;
 	}
+	
 	
 	/**
 	 * Fetch the value of the property and default value is set if it's null or empty
@@ -135,6 +140,7 @@ public class PropertiesManager {
 		// Return value
 		return value;
 	}
+	
 	
 	/**
 	 * Fetch the value of the property and default value is set if it's null, empty or not an integer
@@ -191,5 +197,51 @@ public class PropertiesManager {
 		
 		// Return value
 		return value;
+	}
+	
+	
+	/**
+	 * Check and resolve for environment variables inside properties values with format ${var}
+	 * @param value Property value
+	 * @return The value with resolved environment variables if present
+	 */
+   	private String resolveEnvironmentVariables(String value) {
+		// Check for null value
+	    if (null == value)
+	        return null;
+	    
+	    // Create pattern for environment variable matching ${env-var} 
+	    Pattern pattern = Pattern.compile("\\$\\{(\\w+)\\}");
+	    
+	    // Set matcher engine for selected value
+	    Matcher matcher = pattern.matcher(value);
+	    
+	    // Result buffer
+	    StringBuffer result = new StringBuffer();
+	    
+	    // Environment name
+	    String envName = "";
+	    
+	    // Environment value
+	    String envValue = "";
+	    
+	    // Search for a match
+	    while(matcher.find()){
+	    	
+	    	// Get environment variable name
+	    	envName = matcher.group(1);
+	    	
+	    	// Get environment variable value
+	    	envValue = System.getenv(envName);
+
+	    	// Replace with blank if null
+	        matcher.appendReplacement(result, null == envValue ? "" : envValue);
+	    }
+	    
+	    // Append the last characters
+	    matcher.appendTail(result);
+	    
+	    // Return the replaced value
+	    return result.toString();
 	}
 }
