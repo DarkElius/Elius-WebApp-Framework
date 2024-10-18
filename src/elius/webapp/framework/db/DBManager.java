@@ -67,6 +67,9 @@ public class DBManager {
 	// Authentication credentials
 	private SecretCredentials credentials;
 	
+	// Modify empty string value to null for record change (default is false)
+	private boolean emptyStringToNull;
+	
 	
 	/**
 	 * Constructor for datasoruce connections
@@ -84,6 +87,10 @@ public class DBManager {
 		
 		// Data source name
 		this.dataSourceName = dataSourceName;
+		
+		// Modify empty string value to null for record change (default is false)
+		emptyStringToNull = false;
+		
 	}
 	
 
@@ -108,6 +115,10 @@ public class DBManager {
 		
 		// Set authorization credentials
 		this.credentials = credentials;
+		
+		// Modify empty string value to null for record change (default is false)
+		emptyStringToNull = false;
+		
 	}
 	
 	
@@ -307,14 +318,38 @@ public class DBManager {
  	 * @param parms Parameters
  	 * @throws SQLException
  	 */
-	private static final void fillPreparedStatement(final PreparedStatement pStmt, final Object... parms)
+	private void fillPreparedStatement(final PreparedStatement pStmt, final Object... parms)
 			throws SQLException {
 		
-		// Read parameters
-		for (int i = 0; i < parms.length; i++) {
+		// Separate code for empty string that need to be converted in null
+		if(this.emptyStringToNull) {
 			
-			// Set parameter to statement starting from 1
-			pStmt.setObject(i + 1, parms[i]);
+			// Read parameters
+			for (int i = 0; i < parms.length; i++) {
+			
+				// Identify strings
+				if(parms[i].getClass().equals(String.class)) {
+
+					// Check if it's empty and convert it to null
+					if("".equals((String)parms[i]))
+						parms[i] = null;			
+
+				}
+				
+				// Set parameter to statement starting from 1
+				pStmt.setObject(i + 1, parms[i]);
+				
+			}
+
+		} else {
+
+			// Read parameters
+			for (int i = 0; i < parms.length; i++) {
+				
+				// Set parameter to statement starting from 1
+				pStmt.setObject(i + 1, parms[i]);
+				
+			}
 			
 		}
 	}
@@ -464,5 +499,25 @@ public class DBManager {
 	public Connection getConnection() {
 		return connection;
 	}
+
+
+	
+	/**
+	 * Get the current value of Empty String To Null setting
+	 * @return Empty String To Null True if empty-to-null conversion for strings is enabled
+	 */
+	public boolean isEmptyStringToNull() {
+		return emptyStringToNull;
+	}
+
+
+	/**
+	 * Set the current value of Empty String To Null
+	 * @param emptyStringToNull True to enable empty-to-null conversion for strings 
+	 */
+	public void setEmptyStringToNull(boolean emptyStringToNull) {
+		this.emptyStringToNull = emptyStringToNull;
+	}
+	
 	
 }
