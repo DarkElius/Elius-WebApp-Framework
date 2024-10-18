@@ -331,13 +331,19 @@ public class DBManager {
 				if(parms[i].getClass().equals(String.class)) {
 
 					// Check if it's empty and convert it to null
-					if("".equals((String)parms[i]))
-						parms[i] = null;			
+					if("".equals((String)parms[i])) {
+					
+						// Set parameter to statement starting from 1
+						pStmt.setNull(i + 1, java.sql.Types.VARCHAR);	
+					
+					}
 
+				} else {
+					
+					// Set parameter to statement starting from 1
+					pStmt.setObject(i + 1, parms[i]);	
+					
 				}
-				
-				// Set parameter to statement starting from 1
-				pStmt.setObject(i + 1, parms[i]);
 				
 			}
 
