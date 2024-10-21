@@ -36,10 +36,9 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import elius.webapp.framework.security.secret.SecretCredentials;
-
-import org.apache.logging.log4j.LogManager;
 
 public class DBManager {
 
@@ -58,7 +57,7 @@ public class DBManager {
 	// Data source name
 	private String dataSourceName;
 	
-	// Connection url
+	// Connection URL
 	private String connUrl;
 	
 	// Driver class name
@@ -67,12 +66,12 @@ public class DBManager {
 	// Authentication credentials
 	private SecretCredentials credentials;
 	
-	// Modify empty string value to null for record change (default is false)
-	private boolean emptyStringToNull;
+	// Fill flag
+	private DBDataSettings fillFlag;
 	
 	
 	/**
-	 * Constructor for datasoruce connections
+	 * Constructor for datasource connections
 	 * @param dataSourceName Data source name
 	 */
 	public DBManager(String dataSourceName) {
@@ -88,8 +87,8 @@ public class DBManager {
 		// Data source name
 		this.dataSourceName = dataSourceName;
 		
-		// Modify empty string value to null for record change (default is false)
-		emptyStringToNull = false;
+		// Set fill flag to default
+		fillFlag = DBDataSettings.DEFAULT;
 		
 	}
 	
@@ -107,7 +106,7 @@ public class DBManager {
 		// Initialize connection
 		connection = null;
 
-		// Set connection url
+		// Set connection URL
 		this.connUrl = connUrl;
 		
 		// Set Driver class name
@@ -116,8 +115,8 @@ public class DBManager {
 		// Set authorization credentials
 		this.credentials = credentials;
 		
-		// Modify empty string value to null for record change (default is false)
-		emptyStringToNull = false;
+		// Set fill flag to default
+		fillFlag = DBDataSettings.DEFAULT;
 		
 	}
 	
@@ -129,6 +128,7 @@ public class DBManager {
 	 * @return Object table
 	 */
 	public List<Map<String, Object>> executeQuery(String sql, Object... parms) {
+		
 		// Log SQL, do not trace SQL code for security reasons
 		logger.trace("Execute sql");
 
@@ -147,7 +147,7 @@ public class DBManager {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			
 			// Fill parameters in the statement
-			fillPreparedStatement(preparedStatement, parms);
+			fillPreparedStatement(preparedStatement, fillFlag, parms);
 		
 			// Insert row
 			ResultSet rs = preparedStatement.executeQuery();
@@ -196,6 +196,7 @@ public class DBManager {
 		// Return object table
 		return table;
 	}
+	
 	
 	
 	/**
@@ -249,6 +250,7 @@ public class DBManager {
 	}
 	
 	
+	
 	/**
 	 * Update 
 	 * @param sql SQL to be executed
@@ -269,7 +271,7 @@ public class DBManager {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			
 			// Fill parameters in the statement
-			fillPreparedStatement(preparedStatement, parms);
+			fillPreparedStatement(preparedStatement, fillFlag, parms);
 
 			// Update row
 			int rows = preparedStatement.executeUpdate();
@@ -315,50 +317,46 @@ public class DBManager {
  	/**
  	 * Fill parameters inside prepared statement
  	 * @param pStmt Prepared statement
+ 	 * @param fillFlag Fill flag for data conversion
  	 * @param parms Parameters
  	 * @throws SQLException
  	 */
-	private void fillPreparedStatement(final PreparedStatement pStmt, final Object... parms)
+	private static final void fillPreparedStatement(final PreparedStatement pStmt, DBDataSettings fillFlag, final Object... parms)
 			throws SQLException {
 		
-		// Separate code for empty string that need to be converted in null
-		if(this.emptyStringToNull) {
+
+		// Convert data if specified
+		if(DBDataSettings.EMPTY_STRING_TO_NULL == fillFlag) {
+		
+			// Convert empty strings to null
+			DBDataConversion.convertEmptyStrings(null, parms);
+ 
+		} else if(DBDataSettings.EMPTY_STRING_TO_SPACE == fillFlag) {
 			
-			// Read parameters
-			for (int i = 0; i < parms.length; i++) {
+			// Convert empty strings to space
+			DBDataConversion.convertEmptyStrings(" ", parms);		
 			
-				// Identify strings
-				if(parms[i].getClass().equals(String.class)) {
-
-					// Check if it's empty and convert it to null
-					if("".equals((String)parms[i])) {
-					
-						// Set parameter to statement starting from 1
-						pStmt.setNull(i + 1, java.sql.Types.VARCHAR);	
-					
-					}
-
-				} else {
-					
-					// Set parameter to statement starting from 1
-					pStmt.setObject(i + 1, parms[i]);	
-					
-				}
+		}
+		
+		// Read parameters
+		for (int i = 0; i < parms.length; i++) {
+			
+			// Null objects
+			if(null == parms[i]) {
 				
-			}
-
-		} else {
-
-			// Read parameters
-			for (int i = 0; i < parms.length; i++) {
+				// Set null parameter to statement starting from 1
+				pStmt.setNull(i + 1, java.sql.Types.NULL);
 				
+			} else {
+
 				// Set parameter to statement starting from 1
 				pStmt.setObject(i + 1, parms[i]);
 				
 			}
-			
-		}
+		}	
+		
 	}
+	
 	
 	
 	/**
@@ -497,6 +495,7 @@ public class DBManager {
 		return rc;
 	}
 
+	
 
 	/**
 	 * Get connection instance
@@ -509,21 +508,22 @@ public class DBManager {
 
 	
 	/**
-	 * Get the current value of Empty String To Null setting
-	 * @return Empty String To Null True if empty-to-null conversion for strings is enabled
+	 * Get fill flag
+	 * @return Fill flag
 	 */
-	public boolean isEmptyStringToNull() {
-		return emptyStringToNull;
+	public DBDataSettings getFillFlag() {
+		return fillFlag;
 	}
+
 
 
 	/**
-	 * Set the current value of Empty String To Null
-	 * @param emptyStringToNull True to enable empty-to-null conversion for strings 
+	 * Set Fill Flag
+	 * @param fillFlag Fill Flag
 	 */
-	public void setEmptyStringToNull(boolean emptyStringToNull) {
-		this.emptyStringToNull = emptyStringToNull;
+	public void setFillFlag(DBDataSettings fillFlag) {
+		this.fillFlag = fillFlag;
 	}
-	
+
 	
 }
