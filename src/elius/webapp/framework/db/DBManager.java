@@ -67,7 +67,7 @@ public class DBManager {
 	private SecretCredentials credentials;
 	
 	// Fill flag
-	private DBDataSettings fillFlag;
+	private DBDataConversionSettings dataConversionSettings;
 	
 	
 	/**
@@ -87,8 +87,8 @@ public class DBManager {
 		// Data source name
 		this.dataSourceName = dataSourceName;
 		
-		// Set fill flag to default
-		fillFlag = DBDataSettings.DEFAULT;
+		// Set data conversion setting to default
+		dataConversionSettings = DBDataConversionSettings.DEFAULT;
 		
 	}
 	
@@ -115,8 +115,8 @@ public class DBManager {
 		// Set authorization credentials
 		this.credentials = credentials;
 		
-		// Set fill flag to default
-		fillFlag = DBDataSettings.DEFAULT;
+		// Set data conversion setting to default
+		dataConversionSettings = DBDataConversionSettings.DEFAULT;
 		
 	}
 	
@@ -147,7 +147,7 @@ public class DBManager {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			
 			// Fill parameters in the statement
-			fillPreparedStatement(preparedStatement, fillFlag, parms);
+			fillPreparedStatement(preparedStatement, dataConversionSettings, parms);
 		
 			// Insert row
 			ResultSet rs = preparedStatement.executeQuery();
@@ -271,7 +271,7 @@ public class DBManager {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			
 			// Fill parameters in the statement
-			fillPreparedStatement(preparedStatement, fillFlag, parms);
+			fillPreparedStatement(preparedStatement, dataConversionSettings, parms);
 
 			// Update row
 			int rows = preparedStatement.executeUpdate();
@@ -321,17 +321,17 @@ public class DBManager {
  	 * @param parms Parameters
  	 * @throws SQLException
  	 */
-	private static final void fillPreparedStatement(final PreparedStatement pStmt, DBDataSettings fillFlag, final Object... parms)
+	private static final void fillPreparedStatement(final PreparedStatement pStmt, DBDataConversionSettings fillFlag, final Object... parms)
 			throws SQLException {
 		
 
 		// Convert data if specified
-		if(DBDataSettings.EMPTY_STRING_TO_NULL == fillFlag) {
+		if(DBDataConversionSettings.EMPTY_STRING_TO_NULL == fillFlag) {
 		
 			// Convert empty strings to null
 			DBDataConversion.convertEmptyStrings(null, parms);
  
-		} else if(DBDataSettings.EMPTY_STRING_TO_SPACE == fillFlag) {
+		} else if(DBDataConversionSettings.EMPTY_STRING_TO_SPACE == fillFlag) {
 			
 			// Convert empty strings to space
 			DBDataConversion.convertEmptyStrings(" ", parms);		
@@ -508,21 +508,21 @@ public class DBManager {
 
 	
 	/**
-	 * Get fill flag
-	 * @return Fill flag
+	 * Get data conversion settings
+	 * @return Data conversion settings
 	 */
-	public DBDataSettings getFillFlag() {
-		return fillFlag;
+	public DBDataConversionSettings getDataConversionSettings() {
+		return dataConversionSettings;
 	}
 
 
 
 	/**
-	 * Set Fill Flag
-	 * @param fillFlag Fill Flag
+	 * Set data conversion settings
+	 * @param dataConversionSettings Data conversion settings
 	 */
-	public void setFillFlag(DBDataSettings fillFlag) {
-		this.fillFlag = fillFlag;
+	public void setDataConversionSettings(DBDataConversionSettings dataConversionSettings) {
+		this.dataConversionSettings = dataConversionSettings;
 	}
 
 	

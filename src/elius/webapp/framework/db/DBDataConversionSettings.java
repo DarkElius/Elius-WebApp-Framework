@@ -19,7 +19,7 @@ under the License.
 
 package elius.webapp.framework.db;
 
-public enum DBDataSettings {
+public enum DBDataConversionSettings {
 
 	UNKNOWN(0, "Unknown"), 
 	DEFAULT(1, "Default"), 
@@ -38,7 +38,7 @@ public enum DBDataSettings {
 	 * @param id Fill flag id
 	 * @param name Fill flag name
 	 */
-	DBDataSettings(int id, String name) {
+	DBDataConversionSettings(int id, String name) {
 		this.name = name;
 		this.id = id;
 	}
@@ -67,8 +67,8 @@ public enum DBDataSettings {
 	 * @param id Fill flag id
 	 * @return Fill flag
 	 */
-	public static DBDataSettings getById(int id) {
-	    for(DBDataSettings e : values()) {
+	public static DBDataConversionSettings getById(int id) {
+	    for(DBDataConversionSettings e : values()) {
 	        if(e.id == id) return e;
 	    }
 	    return UNKNOWN;
