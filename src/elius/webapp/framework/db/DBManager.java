@@ -166,7 +166,7 @@ public class DBManager {
 				// Get every column
 				for (int c = 1; c <= metaData.getColumnCount(); c++) {
 					// Insert column label/value in the row
-					tableRow.put(metaData.getColumnName(c), rs.getObject(c));
+					tableRow.put(metaData.getColumnLabel(c), rs.getObject(c));
 				}
 				
 				// Add row to table
