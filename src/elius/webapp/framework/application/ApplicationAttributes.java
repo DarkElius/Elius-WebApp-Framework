@@ -36,9 +36,6 @@ public class ApplicationAttributes {
 	// Application properties file
 	public static final String APP_PROPERTIES_FILE = "ewa.properties";
 	
-	// Application KeyStore path + filename
-	public static final String APP_KEYSTORE_FILE = "ewa.jks";
-	
 	
 	
 	// Default - Enable authentication
@@ -78,7 +75,7 @@ public class ApplicationAttributes {
 	// Properties - LDAP port
 	public static final String PROP_LDAP_PORT = "ldap.port";
 
-	// Properties - LDAP enable ldaps (secure) (y/n), default is y
+	// Properties - LDAP enable LDAPs (secure) (y/n), default is y
 	public static final String PROP_LDAP_SECURE = "ldap.secure";
 	
 	// Properties - LDAP trust all certificates (y/n), default is n
