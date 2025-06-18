@@ -37,6 +37,7 @@ import com.unboundid.ldap.sdk.SearchScope;
 import elius.webapp.framework.application.ApplicationAttributes;
 import elius.webapp.framework.application.ApplicationUserRole;
 import elius.webapp.framework.properties.PropertiesManager;
+import elius.webapp.framework.properties.PropertiesManagerFactory;
 import elius.webapp.framework.security.SecurityTrustAllCertificates;
 import elius.webapp.framework.security.secret.SecretCredentials;
 
@@ -81,10 +82,8 @@ public class AuthenticationLdap {
 	 * Constructor
 	 */
 	public AuthenticationLdap() {
-		// Application properties
-		appProperties = new PropertiesManager();
-		// Load default properties
-		appProperties.load();
+		// Load application properties
+		appProperties = PropertiesManagerFactory.getInstance(ApplicationAttributes.APP_PROPERTIES_FILE);
 		
 		// Server
 		server = appProperties.get(ApplicationAttributes.PROP_LDAP_SERVER);

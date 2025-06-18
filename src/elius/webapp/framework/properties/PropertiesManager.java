@@ -32,22 +32,47 @@ import org.apache.logging.log4j.Logger;
 import elius.webapp.framework.application.ApplicationAttributes;
 
 
+
 public class PropertiesManager {
 
 	// Get logger
 	private static Logger logger = LogManager.getLogger(PropertiesManager.class);
 	
 	// Properties file
-	private Properties properties;
+	private final Properties properties = new Properties();;
+	
+	// Properties filename
+	private final String filename;
+	
+
+	/**
+	 * Constructor
+	 * @param filename Properties filename
+	 */
+	public PropertiesManager(String filename) {
+		// Set properties filename
+		this.filename = filename;
+		
+		// Load properties from selected file
+		load();
+	}
 
 	
 	/**
-	 * Load property file from default system property
-	 * @return 0 Successful, 1 Error
+	 * Get the properties load status
+	 * @return true if properties file is loaded
 	 */
-	public int load() {
-		// Load default
-		return load(ApplicationAttributes.APP_PROPERTIES_FILE);
+	public boolean isLoaded() {
+		return (null != properties);
+	}
+	
+	
+	/**
+	 * Get properties filename
+	 * @return Properties filename
+	 */
+	public String getFilename() {
+		return filename;
 	}
 	
 	
@@ -56,22 +81,13 @@ public class PropertiesManager {
 	 * @param propertiesFile Properties file
 	 * @return 0 Successful, 1 Error
 	 */
-	public int load(String propertiesFile) {
-		
-		// Initialize properties file
-		if(null == properties) {
-			// New instance
-			properties = new Properties();
-		} else {
-			// Clear the old
-			properties.clear();
-		}
+	private int load() {
 		
 		// Log file name
-		logger.trace("Open property file(" + System.getProperty(ApplicationAttributes.APP_PATH) + "/" + propertiesFile + ")");
+		logger.trace("Open property file(" + System.getProperty(ApplicationAttributes.APP_PATH) + "/" + filename + ")");
 		
 		// Read property file from system property
-        try (InputStream input = new FileInputStream(System.getProperty(ApplicationAttributes.APP_PATH) + "/" + propertiesFile)) {
+        try (InputStream input = new FileInputStream(System.getProperty(ApplicationAttributes.APP_PATH) + "/" + filename)) {
 
             // Load a properties file
             properties.load(input);

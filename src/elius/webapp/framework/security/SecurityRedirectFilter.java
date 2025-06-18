@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import elius.webapp.framework.application.ApplicationAttributes;
 import elius.webapp.framework.properties.PropertiesManager;
+import elius.webapp.framework.properties.PropertiesManagerFactory;
 import elius.webapp.framework.security.authentication.AuthenticationManager;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -37,18 +38,14 @@ public class SecurityRedirectFilter implements Filter {
 	 */
 	public SecurityRedirectFilter() {
 	
-		// Application properties
-		appProperties = new PropertiesManager();
-
-		// Load default properties
-		if(0 == appProperties.load()) {
+		// Load application properties
+		appProperties = PropertiesManagerFactory.getInstance(ApplicationAttributes.APP_PROPERTIES_FILE);
 			
-			// Get redirect mask
-			redirectMask = appProperties.get(ApplicationAttributes.PROP_SECURITY_REDIRECT_MASK, ApplicationAttributes.DEFAULT_SECURITY_REDIRECT_MASK);
-			
-			// Get redirect page
-			redirectPage = appProperties.get(ApplicationAttributes.PROP_SECURITY_REDIRECT_PAGE, ApplicationAttributes.DEFAULT_SECURITY_REDIRECT_PAGE);
-		}
+		// Get redirect mask
+		redirectMask = appProperties.get(ApplicationAttributes.PROP_SECURITY_REDIRECT_MASK, ApplicationAttributes.DEFAULT_SECURITY_REDIRECT_MASK);
+		
+		// Get redirect page
+		redirectPage = appProperties.get(ApplicationAttributes.PROP_SECURITY_REDIRECT_PAGE, ApplicationAttributes.DEFAULT_SECURITY_REDIRECT_PAGE);
 	
 	}
 
